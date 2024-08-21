@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html,body{
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #ae9f1a #f8f8f2;
+}
+
+.custom-scroll{
+    scrollbar-width: thin;
+}
+
