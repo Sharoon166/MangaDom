@@ -87,30 +87,28 @@ const GenrePage = ({ params }) => {
       <div className="p-4 sm:p-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-8">
           {mangaData.map((manga) => (
-            <Link href={`/manga/${manga.attributes.slug}`} key={manga.id}>
-              <div className="bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-3xl">
-                <div className="relative">
-                  <img
-                    src={manga.attributes.posterImage?.small || '/placeholder.jpg'}
-                    alt={manga.attributes.titles.en || manga.attributes.titles.en_jp}
-                    className="w-full h-48 sm:h-64 md:h-80 object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2 sm:p-4">
-                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-white truncate">{manga.attributes.titles.en || manga.attributes.titles.en_jp}</h2>
-                  </div>
-                </div>
-                <div className="p-4 sm:p-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs sm:text-sm font-semibold text-gray-700">Rating</span>
-                    <span className="text-xs sm:text-sm font-bold text-indigo-600">{manga.attributes.averageRating || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs sm:text-sm font-semibold text-gray-700">Chapters</span>
-                    <span className="text-xs sm:text-sm font-bold text-indigo-600">{manga.attributes.chapterCount || 'N/A'}</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+            <div
+              key={manga.id}
+              className="bg-gradient-to-br from-green-500/30 to-yellow-500/30 p-4 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur-md"
+              style={{
+                backgroundImage: `url(${manga.attributes.coverImage?.original || "/cover_placeholder.jpeg"})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            >
+              <Link href={`/manga/${manga.attributes.slug}`} className="flex flex-col items-center">
+                <img
+                  src={manga.attributes.posterImage?.original || "/cover_placeholder.jpeg"}
+                  alt={manga.attributes.titles.en || manga.attributes.titles.en_jp}
+                  width={200}
+                  height={300}
+                  className="w-full max-w-[150px] aspect-[9/16] rounded-2xl shadow-xl object-cover"
+                />
+                <h2 className="text-lg font-semibold mt-2 text-center">
+                  {manga.attributes.titles.en || manga.attributes.titles.en_jp}
+                </h2>
+              </Link>
+            </div>
           ))}
         </div>
       </div>

@@ -2,11 +2,12 @@ import Image from "next/image";
 import { Calendar, Info, Shield, Star } from "lucide-react";
 import { getMangaCharacters, getMangaData } from "@/lib/actions";
 import Link from "next/link";
+import Loading from "@/Loading"; // Importing Loading component
 
 const MangaPage = async ({ params }) => {
   const { mangaName } = params;
   const manga = await getMangaData(mangaName);
-  if (!manga) return null;
+  if (!manga) return <Loading />; // Using Loading component when manga is not found
 
   const characters = await getMangaCharacters(manga?.id);
   return (
@@ -47,6 +48,7 @@ const MangaPage = async ({ params }) => {
               <p className="mt-8 text-gray-300 leading-relaxed text-lg rounded-xl line-clamp-6">
                 {manga.attributes.synopsis}
               </p>
+            
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-gradient-to-br from-pink-500/30 to-blue-500/30 p-4 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur-md">
