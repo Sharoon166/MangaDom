@@ -7,7 +7,7 @@ const GenreSection = async () => {
     const data = await Promise.all(promises);
 
   return data.map((genre,idx) => (
-    <div key={genre.id}>
+    <div key={idx}>
       <GenreCarousel genre={genreSections[idx].name} data={genre} />
     </div>
   ));

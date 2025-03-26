@@ -61,18 +61,16 @@ const GenreCarousel = ({ genre, data }) => {
         <h2 className="text-3xl font-semibold text-white">{genre}</h2>
         <div className="flex space-x-2">
           <button
-            className={`p-2 bg-gray-800 text-white rounded-full shadow-lg transition-opacity duration-300 ${
-              !prevBtnEnabled ? "opacity-50" : "hover:bg-gray-700"
-            }`}
+            className={`p-2 bg-gray-800 text-white rounded-full shadow-lg transition-opacity duration-300 ${!prevBtnEnabled ? "opacity-50" : "hover:bg-gray-700"
+              }`}
             onClick={scrollPrev}
             disabled={!prevBtnEnabled}
           >
             <ChevronLeft />
           </button>
           <button
-            className={`p-2 bg-gray-800 text-white rounded-full shadow-lg transition-opacity duration-300 ${
-              !nextBtnEnabled ? "opacity-50" : "hover:bg-gray-700"
-            }`}
+            className={`p-2 bg-gray-800 text-white rounded-full shadow-lg transition-opacity duration-300 ${!nextBtnEnabled ? "opacity-50" : "hover:bg-gray-700"
+              }`}
             onClick={scrollNext}
             disabled={!nextBtnEnabled}
           >
@@ -80,25 +78,23 @@ const GenreCarousel = ({ genre, data }) => {
           </button>
         </div>
       </div>
-      
+
       <div className="embla__viewport overflow-hidden" ref={emblaRef}>
         <div className="flex items-center gap-6 p-8">
           {data?.map((manga) => (
             <Link
-              href={`/manga/${manga?.attributes?.slug}`}
-              key={manga.id}
-              className="card-container relative flex-none w-60 h-80 rounded-lg shadow-lg overflow-hidden cursor-pointer"
+            href={`/manga/${(manga?.attributes?.titles?.en || manga?.attributes?.canonicalTitle || '').replace(/\s+/g, '-')}`}              key={manga.id} className="card-container relative flex-none w-60 h-80 rounded-lg shadow-lg overflow-hidden cursor-pointer"
             >
               <Image
                 src={manga?.attributes?.posterImage?.original}
-                alt={manga?.attributes?.canonicalTitle}
+                alt={manga?.attributes?.canonicalTitle || `banner`}
                 width={300}
                 height={450}
                 className="poster absolute top-0 left-0 w-full h-full object-cover"
               />
               <Image
                 src={manga?.attributes?.coverImage?.original || manga?.attributes?.posterImage?.original}
-                alt={`${manga?.attributes?.canonicalTitle} Banner`}
+                alt={`${manga?.attributes?.canonicalTitle}` || `Banner`}
                 width={400}
                 height={250}
                 className="banner absolute top-0 left-0 w-full h-full object-cover opacity-0"
@@ -114,12 +110,12 @@ const GenreCarousel = ({ genre, data }) => {
               </div>
             </Link>
           ))}
-          
+
           <Link
             href={`genre/${genre}`}
             className="m-2 p-3 bg-gray-800 text-white rounded-full shadow-lg transition-opacity duration-300 "
           >
-            <ChevronRight/>
+            <ChevronRight />
           </Link>
         </div>
       </div>

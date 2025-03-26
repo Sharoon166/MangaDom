@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: "media.kitsu.app",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "uploads.mangadex.org",
+        port: "",
+      },
     ],
   },
 };

@@ -43,18 +43,18 @@ const MustRead = async () => {
               </p>
               <Link
                 href={`/manga/${manga.attributes.slug}`}
-                className="p-2 inline-block bg-primary text-white rounded-sm self-end">
+                className="p-2 inline-block bg-black text-white rounded-sm self-end">
                 Read Now
               </Link>
             </div>
             <div className="absolute bottom-3 right-3 flex gap-2 text-primary">
-              <button className="p-2 bg-white hover:bg-white/90 rounded-full aspect-square">
+              <button className="p-2 bg-black hover:bg-black/90 rounded-full aspect-square">
                 <LucideThumbsUp />
               </button>
-              <button className="p-2 bg-white hover:bg-white/90 rounded-full aspect-square">
+              <button className="p-2 bg-black hover:bg-black/90 rounded-full aspect-square">
                 <EyeIcon />
               </button>
-              <button className="p-2 bg-white hover:bg-white/90 rounded-full aspect-square">
+              <button className="p-2 bg-black hover:bg-black/90 rounded-full aspect-square">
                 <Bookmark />
               </button>
             </div>

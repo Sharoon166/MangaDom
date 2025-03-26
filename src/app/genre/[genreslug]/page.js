@@ -1,12 +1,19 @@
 "use client"
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import {Loading} from '@/Loading'
+import React, { useState, useEffect } from 'react'
+import Loading from '@/Loading'
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
+import Image from 'next/image'
 
-export async function getMangaByGenreExtended(slug, page = 1, limit = 20) {
+const getMangaByGenreExtended = async (slug, page = 1, limit = 20) => {
   try {
-    const response = await fetch(`https://kitsu.io/api/edge/manga?sort=-userCount&filter[genres]=${slug}&page[limit]=${limit}&page[offset]=${(page - 1) * limit}&fields[manga]=titles,coverImage,posterImage,averageRating,synopsis,chapterCount,startDate,slug`)
+    const response = await fetch(
+      `https://kitsu.io/api/edge/manga?sort=-userCount&filter[genres]=${slug}&page[limit]=${limit}&page[offset]=${(page - 1) * limit}&fields[manga]=titles,coverImage,posterImage,averageRating,synopsis,chapterCount,startDate,slug`
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch manga data')
+    }
     const data = await response.json()
     return data
   } catch (error) {
@@ -16,123 +23,171 @@ export async function getMangaByGenreExtended(slug, page = 1, limit = 20) {
 }
 
 const GenrePage = ({ params }) => {
-  const { genreslug } = params
+  const { genreslug } = React.use(params)
   const [currentPage, setCurrentPage] = useState(1)
   const [mangaData, setMangaData] = useState([])
   const [meta, setMeta] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await getMangaByGenreExtended(genreslug, currentPage)
-      if (result) {
-        setMangaData(result.data)
-        setMeta(result.meta)
+      try {
+        setLoading(true)
+        const result = await getMangaByGenreExtended(genreslug, currentPage)
+        if (result) {
+          setMangaData(result.data || [])
+          setMeta(result.meta || { count: 0 })
+          setError(null)
+        } else {
+          setError('Failed to load manga data')
+        }
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
       }
     }
     fetchData()
   }, [genreslug, currentPage])
 
-  if (!mangaData || !meta) {
-    return <div className='h-screen flex items-center justify-center'>
-
-    <div class="flex-col gap-4 w-full flex items-center justify-center">
-     <div
-       class="w-20 h-20 border-4 border-transparent text-blue-400 text-4xl animate-spin flex items-center justify-center border-t-blue-400 rounded-full"
-       >
-       <div
-         class="w-16 h-16 border-4 border-transparent text-red-400 text-2xl animate-spin flex items-center justify-center border-t-red-400 rounded-full"
-         ></div>
-     </div>
-   </div>
-         </div>
-    
+  if (loading) {
+    return <Loading />
   }
 
-  const totalPages = Math.ceil(meta.count / 20)
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold text-red-500">Error: {error}</h1>
+      </div>
+    )
+  }
+
+  const totalPages = meta ? Math.ceil(meta.count / 20) : 1
 
   const handlePageChange = (newPage) => {
-    setCurrentPage(newPage)
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage)
+    }
   }
 
-  const renderPaginationButtons = () => {
-    const buttons = []
-    const maxVisibleButtons = 5
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisibleButtons / 2))
-    let endPage = Math.min(totalPages, startPage + maxVisibleButtons - 1)
-
-    if (endPage - startPage + 1 < maxVisibleButtons) {
-      startPage = Math.max(1, endPage - maxVisibleButtons + 1)
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      buttons.push(
-        <button
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`relative inline-flex items-center px-2 sm:px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
-            currentPage === i ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          {i}
-        </button>
-      )
-    }
-
-    return buttons
+  const formatGenreName = (slug) => {
+    return slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 sm:mb-12 text-center text-purple-800 tracking-tight">{genreslug.charAt(0).toUpperCase() + genreslug.slice(1)} Manga</h1>
-      <div className="p-4 sm:p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-8">
-          {mangaData.map((manga) => (
-            <div
-              key={manga.id}
-              className="bg-gradient-to-br from-green-500/30 to-yellow-500/30 p-4 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur-md"
-              style={{
-                backgroundImage: `url(${manga.attributes.coverImage?.original || "/cover_placeholder.jpeg"})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            >
-              <Link href={`/manga/${manga.attributes.slug}`} className="flex flex-col items-center">
-                <img
-                  src={manga.attributes.posterImage?.original || "/cover_placeholder.jpeg"}
-                  alt={manga.attributes.titles.en || manga.attributes.titles.en_jp}
-                  width={200}
-                  height={300}
-                  className="w-full max-w-[150px] aspect-[9/16] rounded-2xl shadow-xl object-cover"
-                />
-                <h2 className="text-lg font-semibold mt-2 text-center">
-                  {manga.attributes.titles.en || manga.attributes.titles.en_jp}
-                </h2>
-              </Link>
-            </div>
-          ))}
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 sm:mb-12 text-center text-purple-800 tracking-tight">
+        {formatGenreName(genreslug)} Manga
+      </h1>
+
+      {mangaData.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-xl text-gray-600">No manga found in this genre</p>
         </div>
-      </div>
-      <div className="flex items-center justify-center mt-8">
-        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px overflow-x-auto max-w-full" aria-label="Pagination">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-          >
-            <span className="sr-only">Previous</span>
-            <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-          </button>
-          {renderPaginationButtons()}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-          >
-            <span className="sr-only">Next</span>
-            <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </nav>
-      </div>
+      ) : (
+        <>
+          <div className="p-4 sm:p-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-8">
+              {mangaData.map((manga) => {
+                const title = manga.attributes.titles.en ||
+                  manga.attributes.titles.en_jp ||
+                  Object.values(manga.attributes.titles)[0]
+                const coverImage = manga.attributes.coverImage?.original || "/cover_placeholder.jpeg"
+                const posterImage = manga.attributes.posterImage?.original || "/cover_placeholder.jpeg"
+
+                return (
+                  <div
+                    key={manga.id}
+                    className="relative rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden h-[350px]"
+                  >
+                    <div
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        backgroundImage: `url(${coverImage})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        filter: 'blur(8px) brightness(0.7)',
+                        transform: 'scale(1.1)',
+                      }}
+                    ></div>
+
+                    <div className="relative z-10 h-full p-4 flex flex-col items-center justify-center backdrop-blur-[2px]">
+                      <Link
+                        href={`/manga/${manga.attributes.slug}`}
+                        className="flex flex-col items-center w-full h-full"
+                      >
+                        <Image
+                          src={posterImage}
+                          alt={title}
+                          width={200}
+                          height={300}
+                          className="w-full max-w-[150px] aspect-[9/16] rounded-2xl shadow-xl object-cover"
+                          onError={(e) => {
+                            e.target.src = "/cover_placeholder.jpeg"
+                          }}
+                        />
+                        <h2 className="text-lg font-semibold mt-2 text-center text-white line-clamp-2">
+                          {title}
+                        </h2>
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center mt-8 cursor-pointer">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum
+                    if (totalPages <= 5) {
+                      pageNum = i + 1
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i
+                    } else {
+                      pageNum = currentPage - 2 + i
+                    }
+
+                    return (
+                      <PaginationItem key={pageNum}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(pageNum)}
+                          isActive={currentPage === pageNum}
+                        >
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  })}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }

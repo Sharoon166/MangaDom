@@ -1,9 +1,6 @@
-const fm = new Intl.DateTimeFormat("en", {
-  dateStyle: "medium",
-});
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge"
 
-export const dateFormatter = (date) => {
-  if (!date) return;
-  if (typeof date === "string") date = new Date(date);
-  return fm.format(date);
-};
+export function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
