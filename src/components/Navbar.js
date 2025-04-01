@@ -69,16 +69,16 @@ const Navbar = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56 grid grid-cols-2 gap-1 p-2">
                   <DropdownMenuItem asChild>
-                    <Link href="/genres/action">Action</Link>
+                    <Link href="/genre/action">Action</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/genres/romance">Romance</Link>
+                    <Link href="/genre/romance">Romance</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/genres/fantasy">Fantasy</Link>
+                    <Link href="/genre/fantasy">Fantasy</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/genres/horror">Horror</Link>
+                    <Link href="/genre/horror">Horror</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="col-span-2 mt-1 justify-center text-primary">
                     <Link href="/genres">View All Genres</Link>

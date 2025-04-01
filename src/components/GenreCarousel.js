@@ -83,7 +83,7 @@ const GenreCarousel = ({ genre, data }) => {
         <div className="flex items-center gap-6 p-8">
           {data?.map((manga) => (
             <Link
-            href={`/manga/${(manga?.attributes?.titles?.en || manga?.attributes?.canonicalTitle || '').replace(/\s+/g, '-')}`}              key={manga.id} className="card-container relative flex-none w-60 h-80 rounded-lg shadow-lg overflow-hidden cursor-pointer"
+              href={`/manga/${(manga?.attributes?.titles?.en || manga?.attributes?.canonicalTitle || '').replace(/\s+/g, '-')}`} key={manga.id} className="card-container relative flex-none w-60 h-80 rounded-lg shadow-lg overflow-hidden cursor-pointer"
             >
               <Image
                 src={manga?.attributes?.posterImage?.original}
