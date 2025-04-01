@@ -86,6 +86,7 @@ export default async function MangaChaptersPage({ params }) {
         mangaData.titles.en_jp ||
         Object.values(mangaData.titles)[0] ||
         "Manga";
+        const sluggedtitle=title.replace(/\s+/g, '-').toLowerCase();
 
     // Group chapters by volume
     const chaptersByVolume = chapters.reduce((acc, chapter) => {
@@ -158,7 +159,7 @@ export default async function MangaChaptersPage({ params }) {
                                             .map((chapter) => (
                                                 <Link
                                                     key={chapter.id}
-                                                    href={`/read/${resolvedParams.slug}/chapter/${chapter.number}`}
+                                                    href={`/read/${sluggedtitle}/chapter/${chapter.number}`}
                                                     className="bg-gray-700 hover:bg-gray-600 p-3 rounded-md transition-colors duration-200"
                                                 >
                                                     <div className="flex justify-between items-center">
